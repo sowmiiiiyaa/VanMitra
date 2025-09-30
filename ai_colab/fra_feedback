@@ -1,0 +1,10 @@
+from textblob import TextBlob
+
+feedbacks = [
+    "We face delays in land mapping.",
+    "Our claim was approved quickly.",
+    "Officials are not visiting our area."
+]
+
+for fb in feedbacks:
+    print(fb, "->", TextBlob(fb).sentiment.polarity)

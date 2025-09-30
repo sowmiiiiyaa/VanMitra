@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FRA Smart Atlas</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+  <h2 style="text-align:center;">FRA Smart Atlas – Prototype</h2>
+  <div id="map" style="height: 600px;"></div>
+
+  <script>
+    // Initialize map
+    var map = L.map('map').setView([20.5937, 78.9629], 5); // India center
+
+    // Add basemap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(map);
+
+    // Sample tribal village points
+    var villageA = L.marker([11.123, 78.123]).addTo(map)
+      .bindPopup("<b>Village A</b><br>Claims Filed: 20<br>Approved: 5<br>Pending: 15");
+
+    var villageB = L.marker([12.234, 77.456]).addTo(map)
+      .bindPopup("<b>Village B</b><br>Claims Filed: 30<br>Approved: 10<br>Pending: 20");
+
+    // Example anomaly: highlight if pending > 70%
+    villageB.bindPopup("<b>Village B</b><br>⚠️ FRA Processing Delayed<br>Claims Filed: 30<br>Approved: 10<br>Pending: 20");
+  </script>
+</body>
+</html>
