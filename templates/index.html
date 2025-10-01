@@ -111,6 +111,7 @@
     </style>
 </head>
 <body>
+    <!-- Updated: Community Feedback Analysis section removed -->
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -138,27 +139,6 @@
                     <div id="predictionResult" class="result" style="display: none;">
                         <h4>Prediction Result:</h4>
                         <p id="predictionText"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feedback Analysis Section -->
-        <div class="section">
-            <h3>💬 Community Feedback Analysis</h3>
-            <div class="flex-container">
-                <div class="flex-item">
-                    <div class="form-group">
-                        <label for="feedback">Community Feedback:</label>
-                        <textarea id="feedback" rows="4" placeholder="Enter feedback from tribal communities about FRA processes...">The new digital process is much faster and easier to understand. We appreciate the transparency.</textarea>
-                    </div>
-                    <button class="btn" onclick="analyzeFeedback()">Analyze Sentiment</button>
-                </div>
-                <div class="flex-item">
-                    <div id="sentimentResult" class="result" style="display: none;">
-                        <h4>Sentiment Analysis:</h4>
-                        <p id="sentimentText"></p>
-                        <p id="polarityText"></p>
                     </div>
                 </div>
             </div>
@@ -215,36 +195,6 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error predicting approval. Please try again.');
-            }
-        }
-
-        // Sentiment Analysis Function
-        async function analyzeFeedback() {
-            const feedback = document.getElementById('feedback').value;
-            
-            try {
-                const response = await fetch('/analyze', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        feedback: feedback
-                    })
-                });
-                
-                const data = await response.json();
-                
-                document.getElementById('sentimentResult').style.display = 'block';
-                document.getElementById('sentimentText').innerHTML = `
-                    <strong>Sentiment: ${data.sentiment}</strong>
-                `;
-                document.getElementById('polarityText').innerHTML = `
-                    <em>Polarity Score: ${data.polarity.toFixed(3)} (Range: -1 to +1)</em>
-                `;
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error analyzing sentiment. Please try again.');
             }
         }
 

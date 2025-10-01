@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Feedback - VanMitra</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .voice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .upload-area {
+            border: 2px dashed #4CAF50;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #45a049;
+            background: #f0f8f0;
+        }
+        
+        .upload-area.dragover {
+            border-color: #2196F3;
+            background: #e3f2fd;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        
+        .upload-btn:hover {
+            background: #45a049;
+        }
+        
+        .demo-btn {
+            background: #2196F3;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        
+        .demo-btn:hover {
+            background: #1976D2;
+        }
+        
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .sentiment-positive { color: #4CAF50; }
+        .sentiment-negative { color: #f44336; }
+        .sentiment-neutral { color: #ff9800; }
+        
+        .priority-high { background: #ffebee; border-left-color: #f44336; }
+        .priority-medium { background: #fff3e0; border-left-color: #ff9800; }
+        .priority-low { background: #e8f5e8; border-left-color: #4CAF50; }
+        
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        
+        .keyword {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        
+        .category {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .actions {
+            margin: 15px 0;
+        }
+        
+        .action-item {
+            background: #e8f5e8;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .urgency-item {
+            background: #ffebee;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 3px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Voice Feedback Analysis</h1>
+        <p>Upload your voice notes to get AI-powered insights and analysis</p>
+        
+        <div class="voice-container">
+            <!-- File Upload Area -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🎵</div>
+                <h3>Drop your voice file here or click to upload</h3>
+                <p>Supported formats: WAV, MP3, OGG, M4A, FLAC (Max 16MB)</p>
+                <input type="file" id="voiceFile" class="file-input" accept=".wav,.mp3,.ogg,.m4a,.flac" />
+                <button class="upload-btn" onclick="document.getElementById('voiceFile').click()">
+                    Choose File
+                </button>
+                <button class="demo-btn" onclick="processDemoVoice()">
+                    Try Demo Voice
+                </button>
+            </div>
+            
+            <!-- Processing Indicator -->
+            <div class="processing" id="processing">
+                <div class="spinner"></div>
+                <p>Processing your voice note...</p>
+                <p>This includes speech-to-text, translation, and AI analysis</p>
+            </div>
+            
+            <!-- Results Display -->
+            <div class="results" id="results">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <a href="/" class="nav-btn">← Back to Home</a>
+            <a href="/voice-analytics" class="nav-btn">View Analytics Dashboard →</a>
+        </div>
+    </div>
+
+    <script>
+        // File upload functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('voiceFile');
+        const processing = document.getElementById('processing');
+        const results = document.getElementById('results');
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+        
+        // File input change handler
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+        
+        // Handle file upload and processing
+        function handleFileUpload(file) {
+            const formData = new FormData();
+            formData.append('voice_file', file);
+            
+            showProcessing();
+            
+            fetch('/upload-voice', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideProcessing();
+                if (data.success) {
+                    displayResults(data.analysis);
+                } else {
+                    displayError(data.error);
+                }
+            })
+            .catch(error => {
+                hideProcessing();
+                displayError('Error processing file: ' + error.message);
+            });
+        }
+        
+        // Process demo voice
+        function processDemoVoice() {
+            showProcessing();
+            
+            fetch('/process-demo-voice')
+            .then(response => response.json())
+            .then(data => {
+                hideProcessing();
+                if (data.success) {
+                    displayResults(data.analysis);
+                } else {
+                    displayError(data.error);
+                }
+            })
+            .catch(error => {
+                hideProcessing();
+                displayError('Error processing demo: ' + error.message);
+            });
+        }
+        
+        function showProcessing() {
+            processing.style.display = 'block';
+            results.style.display = 'none';
+        }
+        
+        function hideProcessing() {
+            processing.style.display = 'none';
+        }
+        
+        function displayResults(analysis) {
+            const sentimentClass = `sentiment-${analysis.sentiment.toLowerCase()}`;
+            const priorityClass = `priority-${analysis.priority_level.toLowerCase()}`;
+            
+            let keywordsHtml = analysis.keywords.map(keyword => 
+                `<span class="keyword">${keyword}</span>`
+            ).join('');
+            
+            let categoriesHtml = analysis.issue_categories.map(category => 
+                `<span class="category">${category}</span>`
+            ).join('');
+            
+            let actionsHtml = analysis.recommended_actions.map(action => 
+                `<div class="action-item">• ${action}</div>`
+            ).join('');
+            
+            let urgencyHtml = analysis.urgency_indicators.map(indicator => 
+                `<div class="urgency-item">⚠️ ${indicator}</div>`
+            ).join('');
+            
+            results.innerHTML = `
+                <h3>📊 Analysis Results</h3>
+                
+                <div class="result-section">
+                    <h4>📝 Original Text</h4>
+                    <p><em>${analysis.original_text}</em></p>
+                </div>
+                
+                <div class="result-section">
+                    <h4>🔤 English Translation</h4>
+                    <p>${analysis.english_text}</p>
+                </div>
+                
+                <div class="result-section">
+                    <h4>😊 Sentiment Analysis</h4>
+                    <p>Overall Sentiment: <strong class="${sentimentClass}">${analysis.sentiment}</strong></p>
+                    <p>Positive: ${analysis.sentiment_scores.positive_score} | 
+                       Negative: ${analysis.sentiment_scores.negative_score} | 
+                       Neutral: ${analysis.sentiment_scores.neutral_score}</p>
+                </div>
+                
+                <div class="result-section">
+                    <h4>🔑 Key Words</h4>
+                    <div class="keywords">${keywordsHtml}</div>
+                </div>
+                
+                <div class="result-section">
+                    <h4>📂 Issue Categories</h4>
+                    <div class="categories">${categoriesHtml}</div>
+                </div>
+                
+                <div class="result-section">
+                    <h4>📋 Summary</h4>
+                    <p>${analysis.summary}</p>
+                </div>
+                
+                <div class="result-section ${priorityClass}">
+                    <h4>⚡ Priority Level: ${analysis.priority_level}</h4>
+                </div>
+                
+                ${actionsHtml ? `
+                <div class="result-section">
+                    <h4>💡 Recommended Actions</h4>
+                    <div class="actions">${actionsHtml}</div>
+                </div>
+                ` : ''}
+                
+                ${urgencyHtml ? `
+                <div class="result-section">
+                    <h4>🚨 Urgency Indicators</h4>
+                    <div class="urgency">${urgencyHtml}</div>
+                </div>
+                ` : ''}
+            `;
+            
+            results.classList.remove('error');
+            results.style.display = 'block';
+        }
+        
+        function displayError(error) {
+            results.innerHTML = `
+                <h3>❌ Error</h3>
+                <p>${error}</p>
+            `;
+            results.classList.add('error');
+            results.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

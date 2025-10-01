@@ -1,0 +1,282 @@
+{
+  "voice_feedback_samples": [
+    {
+      "id": "VF20241001001",
+      "language": "Hindi",
+      "original_text": "हमारे जंगल में अवैध कटाई हो रही है। वन विभाग को तुरंत कार्रवाई करनी चाहिए।",
+      "english_translation": "Illegal cutting is happening in our forest. Forest department should take immediate action.",
+      "sentiment": "Negative",
+      "sentiment_score": -0.75,
+      "keywords": ["forest", "illegal", "cutting", "department", "action"],
+      "issue_category": "Forest Rights",
+      "priority": "High",
+      "recommended_actions": [
+        "Contact forest department immediately",
+        "File legal complaint about illegal logging",
+        "Organize community meeting",
+        "Document evidence of illegal activities"
+      ],
+      "urgency_indicators": ["Immediate action required", "Environmental damage ongoing"],
+      "community": "Gond",
+      "state": "Chhattisgarh",
+      "timestamp": "2024-10-01T08:15:30Z"
+    },
+    {
+      "id": "VF20241001002",
+      "language": "Bengali",
+      "original_text": "আমাদের গ্রামে স্বাস্থ্য কেন্দ্র খুবই প্রয়োজন। নিকটতম হাসপাতাল অনেক দূরে।",
+      "english_translation": "Our village desperately needs a health center. The nearest hospital is very far.",
+      "sentiment": "Negative",
+      "sentiment_score": -0.45,
+      "keywords": ["village", "health", "center", "hospital", "far"],
+      "issue_category": "Healthcare",
+      "priority": "Medium",
+      "recommended_actions": [
+        "Contact local health department",
+        "Request mobile health camp",
+        "Apply for community health center",
+        "Coordinate with NGOs for medical assistance"
+      ],
+      "urgency_indicators": ["Healthcare access limited"],
+      "community": "Santhal",
+      "state": "West Bengal",
+      "timestamp": "2024-10-01T09:22:15Z"
+    },
+    {
+      "id": "VF20241001003",
+      "language": "Kannada",
+      "original_text": "ನಮ್ಮ ಮಕ್ಕಳಿಗೆ ಉತ್ತಮ ಶಿಕ್ಷಣ ಸೌಲಭ್ಯ ಬೇಕು। ಸರ್ಕಾರ ಸಹಾಯ ಮಾಡಬೇಕು।",
+      "english_translation": "Our children need better educational facilities. Government should help us.",
+      "sentiment": "Neutral",
+      "sentiment_score": 0.1,
+      "keywords": ["children", "education", "facilities", "government", "help"],
+      "issue_category": "Education",
+      "priority": "Medium",
+      "recommended_actions": [
+        "Contact education department",
+        "Request teacher recruitment",
+        "Apply for school infrastructure development",
+        "Organize parent-teacher meetings"
+      ],
+      "urgency_indicators": [],
+      "community": "Kuruba",
+      "state": "Karnataka",
+      "timestamp": "2024-10-01T10:45:22Z"
+    },
+    {
+      "id": "VF20241001004",
+      "language": "English",
+      "original_text": "The new digital FRA process is much more transparent and faster than before. We appreciate this improvement.",
+      "english_translation": "The new digital FRA process is much more transparent and faster than before. We appreciate this improvement.",
+      "sentiment": "Positive",
+      "sentiment_score": 0.62,
+      "keywords": ["digital", "process", "transparent", "faster", "improvement"],
+      "issue_category": "General Community Issue",
+      "priority": "Low",
+      "recommended_actions": [
+        "Document positive feedback",
+        "Share best practices with other communities",
+        "Continue monitoring process improvements"
+      ],
+      "urgency_indicators": [],
+      "community": "Munda",
+      "state": "Jharkhand",
+      "timestamp": "2024-10-01T11:30:45Z"
+    },
+    {
+      "id": "VF20241001005",
+      "language": "Tamil",
+      "original_text": "எங்கள் கிராமத்தில் தண்ணீர் பஞ்சம் உள்ளது। உடனடி நடவடிக்கை தேவை।",
+      "english_translation": "There is water scarcity in our village. Immediate action is needed.",
+      "sentiment": "Negative",
+      "sentiment_score": -0.68,
+      "keywords": ["village", "water", "scarcity", "immediate", "action"],
+      "issue_category": "Water Supply",
+      "priority": "High",
+      "recommended_actions": [
+        "Alert water supply department",
+        "Request emergency water tankers",
+        "Apply for bore well installation",
+        "Contact local representatives"
+      ],
+      "urgency_indicators": ["Water scarcity crisis", "Immediate intervention needed"],
+      "community": "Irula",
+      "state": "Tamil Nadu",
+      "timestamp": "2024-10-01T12:18:33Z"
+    }
+  ],
+  "fra_claims_samples": [
+    {
+      "claim_id": "FRA20240001",
+      "community": "Gond",
+      "state": "Chhattisgarh",
+      "district": "Bastar",
+      "village": "Kukdur",
+      "forest_area_hectares": 245.7,
+      "number_of_families": 45,
+      "claim_type": "Community",
+      "status": "Approved",
+      "submission_date": "2024-03-15",
+      "approval_date": "2024-06-22",
+      "approval_probability": 0.87,
+      "priority": "Medium",
+      "documents_submitted": ["GPS Survey", "Village Resolution", "Occupancy Evidence"],
+      "processing_officer": "Mr. Ramesh Kumar",
+      "remarks": "All documentation complete and verified"
+    },
+    {
+      "claim_id": "FRA20240002",
+      "community": "Santhal",
+      "state": "Jharkhand",
+      "district": "Dumka",
+      "village": "Shikaripara",
+      "forest_area_hectares": 156.3,
+      "number_of_families": 32,
+      "claim_type": "Individual",
+      "status": "Pending",
+      "submission_date": "2024-08-22",
+      "approval_date": null,
+      "approval_probability": 0.62,
+      "priority": "Medium",
+      "documents_submitted": ["GPS Survey", "Village Resolution"],
+      "processing_officer": "Ms. Priya Singh",
+      "remarks": "Awaiting field verification"
+    },
+    {
+      "claim_id": "FRA20240003",
+      "community": "Bhil",
+      "state": "Rajasthan",
+      "district": "Udaipur",
+      "village": "Kotra",
+      "forest_area_hectares": 89.2,
+      "number_of_families": 18,
+      "claim_type": "Mixed",
+      "status": "Under Review",
+      "submission_date": "2024-09-10",
+      "approval_date": null,
+      "approval_probability": 0.74,
+      "priority": "High",
+      "documents_submitted": ["GPS Survey", "Village Resolution", "Occupancy Evidence", "Traditional Use Evidence"],
+      "processing_officer": "Mr. Arun Meena",
+      "remarks": "Documentation complete, technical review in progress"
+    },
+    {
+      "claim_id": "FRA20240004",
+      "community": "Ho",
+      "state": "Odisha",
+      "district": "Mayurbhanj",
+      "village": "Baripada",
+      "forest_area_hectares": 312.5,
+      "number_of_families": 67,
+      "claim_type": "Community",
+      "status": "Rejected",
+      "submission_date": "2024-04-08",
+      "approval_date": null,
+      "approval_probability": 0.23,
+      "priority": "Low",
+      "documents_submitted": ["GPS Survey"],
+      "processing_officer": "Ms. Sunita Patel",
+      "remarks": "Insufficient documentation, resubmission required"
+    },
+    {
+      "claim_id": "FRA20240005",
+      "community": "Kurukh",
+      "state": "West Bengal",
+      "district": "Purulia",
+      "village": "Jhalda",
+      "forest_area_hectares": 198.4,
+      "number_of_families": 41,
+      "claim_type": "Individual",
+      "status": "Approved",
+      "submission_date": "2024-05-20",
+      "approval_date": "2024-08-15",
+      "approval_probability": 0.91,
+      "priority": "Medium",
+      "documents_submitted": ["GPS Survey", "Village Resolution", "Occupancy Evidence", "Traditional Use Evidence"],
+      "processing_officer": "Mr. Bikash Mahato",
+      "remarks": "Excellent documentation and clear evidence of traditional use"
+    }
+  ],
+  "analytics_data": {
+    "summary_statistics": {
+      "total_claims": 247,
+      "approved_claims": 89,
+      "pending_claims": 112,
+      "rejected_claims": 46,
+      "approval_rate": 0.36,
+      "average_processing_time_days": 98,
+      "total_voice_feedback": 156,
+      "positive_feedback": 67,
+      "negative_feedback": 58,
+      "neutral_feedback": 31
+    },
+    "state_wise_distribution": {
+      "Chhattisgarh": 45,
+      "Jharkhand": 38,
+      "Odisha": 42,
+      "Madhya Pradesh": 35,
+      "Maharashtra": 28,
+      "Rajasthan": 22,
+      "West Bengal": 19,
+      "Assam": 18
+    },
+    "community_wise_stats": {
+      "Gond": 52,
+      "Santhal": 38,
+      "Bhil": 34,
+      "Munda": 28,
+      "Ho": 24,
+      "Kurukh": 21,
+      "Khasi": 18,
+      "Meena": 16
+    },
+    "monthly_trends": {
+      "claims_submitted": [15, 22, 28, 35, 31, 29, 33, 38, 42, 28, 24, 18],
+      "approval_rate": [0.42, 0.38, 0.45, 0.52, 0.48, 0.41, 0.39, 0.44, 0.47, 0.35, 0.33, 0.38],
+      "voice_feedback_count": [8, 12, 15, 18, 16, 14, 17, 22, 24, 18, 15, 12]
+    },
+    "issue_category_distribution": {
+      "Forest Rights": 45,
+      "Healthcare": 32,
+      "Education": 28,
+      "Water Supply": 25,
+      "Employment": 15,
+      "Infrastructure": 11
+    }
+  },
+  "test_scenarios": [
+    {
+      "scenario": "High Priority Forest Rights Issue",
+      "input": {
+        "claims": 50,
+        "area": 300
+      },
+      "expected_output": {
+        "approval_probability": "Low (30-40%)",
+        "reason": "High area with many claims typically faces more scrutiny"
+      }
+    },
+    {
+      "scenario": "Small Scale Individual Claim",
+      "input": {
+        "claims": 5,
+        "area": 50
+      },
+      "expected_output": {
+        "approval_probability": "High (70-80%)",
+        "reason": "Small scale claims with complete documentation usually get approved"
+      }
+    },
+    {
+      "scenario": "Medium Scale Community Claim",
+      "input": {
+        "claims": 25,
+        "area": 150
+      },
+      "expected_output": {
+        "approval_probability": "Medium (50-60%)",
+        "reason": "Balanced claim size, depends on documentation quality"
+      }
+    }
+  ]
+}

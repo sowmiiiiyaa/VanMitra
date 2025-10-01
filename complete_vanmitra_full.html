@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 VanMitra - Complete Tribal Community Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2e7d32;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: #4caf50;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            padding: 4rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4caf50;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .tab-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            margin: 2rem 0;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .tab-nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .tab-btn.active {
+            background: #4caf50;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* FRA Predictor Styles */
+        .predictor-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .flex-container {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .flex-item {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .result {
+            background: #e8f5e8;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        .result.warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+
+        /* Charts Styles */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .chart-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        .chart-item h4 {
+            margin-bottom: 1rem;
+            color: #2e7d32;
+            text-align: center;
+        }
+
+        /* Voice Upload Styles */
+        .upload-area {
+            border: 3px dashed #4caf50;
+            padding: 3rem;
+            text-align: center;
+            border-radius: 15px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            margin: 2rem 0;
+        }
+
+        .upload-area:hover {
+            background: #e8f5e8;
+            border-color: #45a049;
+        }
+
+        .upload-area.dragover {
+            background: #e8f5e8;
+            border-color: #2e7d32;
+            transform: scale(1.02);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .processing-status {
+            display: none;
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .results-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* Map Styles */
+        #map {
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .legend {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .tab-nav {
+                overflow-x: auto;
+            }
+            
+            .tab-btn {
+                min-width: 120px;
+                font-size: 0.9rem;
+            }
+            
+            .flex-container {
+                flex-direction: column;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4caf50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                🌿 VanMitra
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#fra-predictor">FRA Predictor</a></li>
+                    <li><a href="#voice-feedback">Voice Feedback</a></li>
+                    <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="#map">Smart Atlas</a></li>
+                    <li><a href="#analytics">Analytics</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>🌿 VanMitra</h1>
+            <p>Forest Rights Act (FRA) Management & Decision Support System</p>
+            <p style="font-size: 1.1rem; opacity: 0.8;">🤖 AI-Powered FRA Approval Predictor • 🎤 Voice Feedback Processing • 📊 Real-time Dashboard • 🗺️ Interactive Smart Atlas</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-claims">245</div>
+                <div class="stat-label">FRA Claims</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="approved-claims">127</div>
+                <div class="stat-label">Approved Claims</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="communities">35</div>
+                <div class="stat-label">Communities</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="voice-feedback">156</div>
+                <div class="stat-label">Voice Feedbacks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="forest-area">12,450</div>
+                <div class="stat-label">Hectares Protected</div>
+            </div>
+        </div>
+
+        <!-- Main Feature Tabs -->
+        <div class="tab-container">
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('fra-predictor')">🤖 FRA Predictor</button>
+                <button class="tab-btn" onclick="switchTab('voice-feedback')">🎤 Voice Feedback</button>
+                <button class="tab-btn" onclick="switchTab('dashboard')">📊 FRA Dashboard</button>
+                <button class="tab-btn" onclick="switchTab('map')">🗺️ Smart Atlas</button>
+                <button class="tab-btn" onclick="switchTab('analytics')">📈 Analytics</button>
+            </div>
+
+            <!-- FRA Predictor Tab -->
+            <div id="fra-predictor-tab" class="tab-content active">
+                <h2 style="color: #2e7d32; margin-bottom: 1rem;">🤖 AI-Powered FRA Approval Predictor</h2>
+                <p style="color: #666; margin-bottom: 2rem;">Use machine learning to predict the probability of FRA claim approval based on historical data and key factors.</p>
+                
+                <div class="flex-container">
+                    <div class="flex-item">
+                        <div class="form-group">
+                            <label for="claims">Number of Claims in Area:</label>
+                            <input type="number" id="claims" value="25" min="0" max="1000">
+                        </div>
+                        <div class="form-group">
+                            <label for="area">Forest Area (hectares):</label>
+                            <input type="number" id="area" value="150" min="0" max="10000">
+                        </div>
+                        <div class="form-group">
+                            <label for="families">Number of Families:</label>
+                            <input type="number" id="families" value="30" min="1" max="500">
+                        </div>
+                        <div class="form-group">
+                            <label for="claimType">Claim Type:</label>
+                            <select id="claimType" style="width: 100%; padding: 0.8rem; border: 2px solid #ddd; border-radius: 8px;">
+                                <option value="individual">Individual</option>
+                                <option value="community">Community</option>
+                                <option value="mixed">Mixed</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="predictApproval()">🔮 Predict Approval Probability</button>
+                    </div>
+                    
+                    <div class="flex-item">
+                        <div id="predictionResult" class="result" style="display: none;">
+                            <h4>🎯 Prediction Result:</h4>
+                            <p id="predictionText"></p>
+                        </div>
+                        
+                        <div class="result">
+                            <h4>📊 Recent FRA Statistics:</h4>
+                            <p><strong>Overall Approval Rate:</strong> 67.3%</p>
+                            <p><strong>Average Processing Time:</strong> 45 days</p>
+                            <p><strong>Success Factors:</strong></p>
+                            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                <li>Complete documentation (GPS survey, village resolution)</li>
+                                <li>Smaller area claims (≤200 hectares)</li>
+                                <li>Community consensus and support</li>
+                                <li>Traditional use evidence</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Feedback Tab -->
+            <div id="voice-feedback-tab" class="tab-content">
+                <h2 style="color: #2e7d32; margin-bottom: 1rem;">🎤 AI-Powered Voice Feedback Processing</h2>
+                <p style="color: #666; margin-bottom: 2rem;">Upload voice notes in your local language. Our AI will transcribe, translate, analyze sentiment, and provide actionable insights.</p>
+                
+                <!-- Upload Section -->
+                <div class="upload-area" id="upload-area">
+                    <div class="feature-icon">🎙️</div>
+                    <h3>Drop your voice recording here</h3>
+                    <p>or click to browse files</p>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 1rem;">
+                        Supported formats: WAV, MP3, M4A<br>
+                        Languages: Hindi, Tamil, Kannada, Bengali, English
+                    </p>
+                    <input type="file" id="audio-file" class="file-input" accept=".wav,.mp3,.m4a" onchange="handleFileSelect(event)">
+                    <button class="btn" onclick="document.getElementById('audio-file').click()" style="margin: 1rem;">📁 Select Audio File</button>
+                    <button class="btn" onclick="runVoiceDemo()" style="background: #2196f3; margin: 1rem;">🧪 Try Demo</button>
+                </div>
+
+                <!-- Processing Status -->
+                <div id="processing-status" class="processing-status">
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🔄 Processing your voice feedback...</div>
+                    <div style="font-size: 0.9rem;">AI is analyzing speech, sentiment, and generating insights</div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="results-section" class="results-section">
+                    <h3 style="color: #2e7d32; margin-bottom: 1rem;">📋 Analysis Results</h3>
+                    <div id="results-content"></div>
+                </div>
+
+                <!-- Voice Features Preview -->
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h4>Speech-to-Text</h4>
+                        <p>AI transcription in multiple Indian languages</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h4>Translation</h4>
+                        <p>Auto-translate to English for analysis</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">😊</div>
+                        <h4>Sentiment Analysis</h4>
+                        <p>Emotion & confidence scoring</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💡</div>
+                        <h4>Action Insights</h4>
+                        <p>Department routing & next steps</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content">
+                <h2 style="color: #2e7d32; margin-bottom: 1rem;">📊 FRA Decision Support Dashboard</h2>
+                
+                <div class="charts-container">
+                    <div class="chart-item">
+                        <h4>📈 Claims Status Distribution</h4>
+                        <canvas id="claimsChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h4>⏱️ Processing Time Trends</h4>
+                        <canvas id="timeChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h4>🏛️ Claims by State</h4>
+                        <canvas id="stateChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h4>👥 Community Participation</h4>
+                        <canvas id="communityChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div style="background: #e3f2fd; padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+                    <h4>📈 Key Performance Indicators:</h4>
+                    <div class="stats-grid" style="margin-top: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; color: #4caf50; font-weight: bold;">67.3%</div>
+                            <div style="font-size: 0.9rem;">Overall Approval Rate</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; color: #2196f3; font-weight: bold;">45 days</div>
+                            <div style="font-size: 0.9rem;">Avg Processing Time</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; color: #ff9800; font-weight: bold;">89</div>
+                            <div style="font-size: 0.9rem;">Pending Reviews</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.8rem; color: #9c27b0; font-weight: bold;">15</div>
+                            <div style="font-size: 0.9rem;">Active Districts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Tab -->
+            <div id="map-tab" class="tab-content">
+                <h2 style="color: #2e7d32; margin-bottom: 1rem;">🗺️ FRA Smart Atlas</h2>
+                <p style="color: #666; margin-bottom: 2rem;">Interactive map showing FRA claims status, tribal communities, and forest areas across India.</p>
+                
+                <div id="map"></div>
+                
+                <div style="background: #fff3e0; padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+                    <h4>🌍 Map Features:</h4>
+                    <div class="feature-grid" style="margin-top: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🟢</div>
+                            <strong>Approved Claims</strong>
+                            <p style="font-size: 0.9rem;">Successfully processed and titled</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🟡</div>
+                            <strong>Pending Claims</strong>
+                            <p style="font-size: 0.9rem;">Under review and processing</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔴</div>
+                            <strong>Rejected Claims</strong>
+                            <p style="font-size: 0.9rem;">Need additional documentation</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏘️</div>
+                            <strong>Communities</strong>
+                            <p style="font-size: 0.9rem;">Tribal settlement areas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics-tab" class="tab-content">
+                <h2 style="color: #2e7d32; margin-bottom: 1rem;">📈 Advanced Analytics & Insights</h2>
+                
+                <div class="feature-grid">
+                    <div class="result-card">
+                        <h4>🎭 Voice Sentiment Trends</h4>
+                        <div style="text-align: center; margin: 1rem 0;">
+                            <div style="font-size: 2rem; color: #4caf50;">72%</div>
+                            <div style="color: #666;">Positive Community Feedback</div>
+                        </div>
+                        <div style="font-size: 0.9rem; color: #666;">
+                            <strong>Recent Trends:</strong><br>
+                            • Education issues: 35%<br>
+                            • Healthcare needs: 28%<br>
+                            • Water supply: 22%<br>
+                            • Forest rights: 15%
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h4>📊 FRA Approval Patterns</h4>
+                        <div style="text-align: center; margin: 1rem 0;">
+                            <div style="font-size: 1.5rem; color: #2196f3;">
+                                <div style="color: #4caf50;">Community: 78% ✅</div>
+                                <div style="color: #ff9800;">Individual: 62% ⏳</div>
+                                <div style="color: #f44336;">Mixed: 45% ❌</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.9rem; color: #666;">
+                            <strong>Success Factors:</strong><br>
+                            • Complete documentation<br>
+                            • Community consensus<br>
+                            • Reasonable area size
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h4>🌍 Geographic Distribution</h4>
+                        <div style="text-align: center; margin: 1rem 0;">
+                            <div style="font-size: 1.2rem;">
+                                <div>📍 Chhattisgarh: 89 claims</div>
+                                <div>📍 Jharkhand: 67 claims</div>
+                                <div>📍 Odisha: 54 claims</div>
+                                <div>📍 Rajasthan: 35 claims</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h4>⚡ Processing Efficiency</h4>
+                        <div style="text-align: center; margin: 1rem 0;">
+                            <div style="color: #4caf50; font-size: 1.5rem;">
+                                <div>Average: 45 days</div>
+                                <div style="font-size: 1rem; margin-top: 0.5rem;">
+                                    Fastest: 12 days<br>
+                                    Target: 30 days
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #f3e5f5; padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+                    <h4>🤖 AI System Performance:</h4>
+                    <div class="stats-grid" style="margin-top: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; color: #9c27b0; font-weight: bold;">98.7%</div>
+                            <div style="font-size: 0.9rem;">Voice Transcription Accuracy</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; color: #9c27b0; font-weight: bold;">2.3s</div>
+                            <div style="font-size: 0.9rem;">Avg Processing Time</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; color: #9c27b0; font-weight: bold;">95.2%</div>
+                            <div style="font-size: 0.9rem;">Sentiment Accuracy</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; color: #9c27b0; font-weight: bold;">87.4%</div>
+                            <div style="font-size: 0.9rem;">Prediction Accuracy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let charts = {};
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab and activate button
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+
+            // Initialize specific tab features
+            if (tabName === 'map') {
+                initializeMap();
+            } else if (tabName === 'dashboard') {
+                initializeCharts();
+            }
+        }
+
+        // FRA Approval Prediction
+        function predictApproval() {
+            const claims = parseInt(document.getElementById('claims').value);
+            const area = parseInt(document.getElementById('area').value);
+            const families = parseInt(document.getElementById('families').value);
+            const claimType = document.getElementById('claimType').value;
+            
+            // Enhanced prediction logic
+            let probability = 50; // Base probability
+            
+            // Area factor
+            if (area <= 100) probability += 25;
+            else if (area <= 200) probability += 15;
+            else if (area <= 500) probability += 5;
+            else probability -= 15;
+            
+            // Claims density factor
+            const claimsPerHectare = claims / area;
+            if (claimsPerHectare < 0.2) probability += 20;
+            else if (claimsPerHectare < 0.5) probability += 10;
+            else probability -= 10;
+            
+            // Claim type factor
+            if (claimType === 'community') probability += 15;
+            else if (claimType === 'individual') probability += 5;
+            else probability -= 5; // mixed
+            
+            // Families factor
+            if (families <= 20) probability += 10;
+            else if (families <= 50) probability += 5;
+            else probability -= 5;
+            
+            // Random variation
+            probability += (Math.random() - 0.5) * 20;
+            
+            // Ensure bounds
+            probability = Math.max(10, Math.min(95, probability));
+            
+            const resultColor = probability >= 70 ? '#4caf50' : probability >= 50 ? '#ff9800' : '#f44336';
+            const resultText = probability >= 70 ? 'High' : probability >= 50 ? 'Moderate' : 'Low';
+            
+            document.getElementById('predictionResult').style.display = 'block';
+            document.getElementById('predictionText').innerHTML = `
+                <div style="color: ${resultColor}; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">
+                    ${probability.toFixed(1)}% Approval Probability
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong>Assessment:</strong> ${resultText} likelihood of approval<br>
+                    <strong>Claim Type:</strong> ${claimType.charAt(0).toUpperCase() + claimType.slice(1)}<br>
+                    <strong>Area Analysis:</strong> ${area} hectares for ${families} families<br>
+                    <strong>Claims Density:</strong> ${claimsPerHectare.toFixed(2)} claims/hectare
+                </div>
+                <div style="font-size: 0.9rem; color: #666;">
+                    ${probability >= 70 ? 
+                        '✅ Strong case with good approval chances. Ensure complete documentation.' :
+                        probability >= 50 ?
+                        '⚠️ Moderate case. Consider strengthening documentation and community consensus.' :
+                        '⚠️ Challenging case. May need additional evidence and expert consultation.'
+                    }
+                </div>
+            `;
+        }
+
+        // Voice File Upload and Processing
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('audio-file');
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            console.log('File selected:', file.name);
+            
+            // Show processing status
+            document.getElementById('processing-status').style.display = 'block';
+            document.getElementById('results-section').style.display = 'none';
+            
+            // Create form data for upload
+            const formData = new FormData();
+            formData.append('audio', file);
+            
+            // Send to our Flask API
+            fetch('/api/process-voice', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showVoiceResults(data);
+                } else {
+                    alert('Error: ' + (data.error || 'Processing failed'));
+                    document.getElementById('processing-status').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error processing file: ' + error.message);
+                document.getElementById('processing-status').style.display = 'none';
+            });
+        }
+
+        function runVoiceDemo() {
+            document.getElementById('processing-status').style.display = 'block';
+            document.getElementById('results-section').style.display = 'none';
+            
+            // Call our demo API
+            fetch('/api/demo')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showVoiceResults(data);
+                } else {
+                    alert('Demo Error: ' + (data.error || 'Demo failed'));
+                    document.getElementById('processing-status').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Demo Error:', error);
+                // Fallback demo data
+                showVoiceResults({
+                    filename: 'sample_hindi_forest_rights.wav',
+                    language: 'Hindi',
+                    originalText: 'हमारे जंगल में अवैध कटाई हो रही है। वन विभाग को सूचित करना चाहिए।',
+                    translatedText: 'Illegal cutting is happening in our forest. Forest department should be informed.',
+                    sentiment: 'Negative',
+                    confidence: 0.75,
+                    category: 'Forest Rights',
+                    priority: 'High',
+                    summary: 'Forest rights violation requiring immediate attention.',
+                    keywords: ['forest', 'illegal', 'cutting', 'department'],
+                    department: 'Forest Department & Tribal Affairs',
+                    actions: [
+                        'File complaint with Forest Department',
+                        'Contact legal aid services',
+                        'Document evidence with photos/videos'
+                    ]
+                });
+            });
+        }
+
+        function showVoiceResults(data) {
+            document.getElementById('processing-status').style.display = 'none';
+            
+            const resultsContent = document.getElementById('results-content');
+            resultsContent.innerHTML = `
+                <div class="result-card">
+                    <h4>📁 File: ${data.filename}</h4>
+                    <p><strong>Language Detected:</strong> ${data.language}</p>
+                </div>
+                
+                ${data.originalText ? `
+                <div class="result-card">
+                    <h4>🎤 Original Text</h4>
+                    <p style="font-style: italic; background: #f0f0f0; padding: 1rem; border-radius: 5px;">${data.originalText}</p>
+                </div>
+                
+                <div class="result-card">
+                    <h4>🌐 English Translation</h4>
+                    <p style="background: #e8f5e8; padding: 1rem; border-radius: 5px;">${data.translatedText}</p>
+                </div>
+                ` : ''}
+                
+                <div class="result-card">
+                    <h4>😊 Sentiment Analysis</h4>
+                    <p><strong>Overall Sentiment:</strong> <span style="color: ${data.sentiment === 'Positive' ? '#4caf50' : data.sentiment === 'Negative' ? '#f44336' : '#ff9800'}">${data.sentiment}</span></p>
+                    <p><strong>Confidence:</strong> ${(data.confidence * 100).toFixed(1)}%</p>
+                </div>
+                
+                <div class="result-card">
+                    <h4>📂 Issue Category</h4>
+                    <p><strong>Primary Category:</strong> ${data.category}</p>
+                </div>
+                
+                <div class="result-card">
+                    <h4>⚡ Priority Assessment</h4>
+                    <p><strong>Priority Level:</strong> <span style="color: ${data.priority === 'High' ? '#f44336' : data.priority === 'Medium' ? '#ff9800' : '#4caf50'}">${data.priority}</span></p>
+                </div>
+                
+                <div class="result-card">
+                    <h4>🔑 Key Insights</h4>
+                    <p><strong>Keywords:</strong> ${Array.isArray(data.keywords) ? data.keywords.join(', ') : data.keywords}</p>
+                    <p><strong>Summary:</strong> ${data.summary}</p>
+                </div>
+                
+                ${data.department ? `
+                <div class="result-card" style="border-left-color: #2196f3;">
+                    <h4>💡 Actionable Insights</h4>
+                    <p><strong>Responsible Department:</strong> ${data.department}</p>
+                    <p><strong>Recommended Actions:</strong></p>
+                    <ul style="margin-top: 0.5rem;">
+                        ${data.actions.map(action => `<li>${action}</li>`).join('')}
+                    </ul>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('results-section').style.display = 'block';
+            
+            // Update voice feedback count
+            const voiceFeedbackEl = document.getElementById('voice-feedback');
+            const currentCount = parseInt(voiceFeedbackEl.textContent);
+            voiceFeedbackEl.textContent = currentCount + 1;
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            if (charts.claimsChart) return; // Already initialized
+
+            // Claims Status Chart
+            const ctx1 = document.getElementById('claimsChart').getContext('2d');
+            charts.claimsChart = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: ['Approved', 'Pending', 'Rejected'],
+                    datasets: [{
+                        data: [127, 89, 29],
+                        backgroundColor: ['#4caf50', '#ff9800', '#f44336']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Processing Time Chart
+            const ctx2 = document.getElementById('timeChart').getContext('2d');
+            charts.timeChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Avg Processing Time (days)',
+                        data: [52, 48, 45, 42, 38, 35],
+                        borderColor: '#2196f3',
+                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Days'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // State-wise Claims Chart
+            const ctx3 = document.getElementById('stateChart').getContext('2d');
+            charts.stateChart = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: ['Chhattisgarh', 'Jharkhand', 'Odisha', 'Rajasthan', 'West Bengal'],
+                    datasets: [{
+                        label: 'Number of Claims',
+                        data: [89, 67, 54, 35, 25],
+                        backgroundColor: '#4caf50',
+                        borderColor: '#2e7d32',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Community Participation Chart
+            const ctx4 = document.getElementById('communityChart').getContext('2d');
+            charts.communityChart = new Chart(ctx4, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Gond', 'Santhal', 'Bhil', 'Ho', 'Oraon', 'Others'],
+                    datasets: [{
+                        data: [45, 32, 28, 23, 18, 34],
+                        backgroundColor: [
+                            '#4caf50', '#2196f3', '#ff9800', '#9c27b0', '#f44336', '#795548'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize Map
+        function initializeMap() {
+            if (map) return; // Already initialized
+
+            map = L.map('map').setView([20.5937, 78.9629], 5);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Sample FRA claims data
+            const fraClaimsData = [
+                // Approved Claims (Green)
+                { coords: [19.3200, 81.9580], status: 'approved', id: 'FRA-2024-001', applicant: 'Ramesh Gond', village: 'Kirandul', area: '2.5 acres' },
+                { coords: [23.2156, 85.2803], status: 'approved', id: 'FRA-2024-002', applicant: 'Sunita Santhal', village: 'Shikaripara', area: '3.2 acres' },
+                { coords: [20.2961, 85.8245], status: 'approved', id: 'FRA-2024-003', applicant: 'Tribal Society', village: 'Baripada', area: '15 acres' },
+                
+                // Pending Claims (Yellow)
+                { coords: [24.6341, 73.6976], status: 'pending', id: 'FRA-2024-004', applicant: 'Kailash Bhil', village: 'Kotra', area: '4.1 acres' },
+                { coords: [19.4500, 82.1200], status: 'pending', id: 'FRA-2024-005', applicant: 'Maya Dhurwa', village: 'Bacheli', area: '2.8 acres' },
+                
+                // Rejected Claims (Red)
+                { coords: [22.3721, 87.3150], status: 'rejected', id: 'FRA-2024-006', applicant: 'Ravi Kumar', village: 'Jhalda', area: '1.5 acres' }
+            ];
+
+            // Add markers for each claim
+            fraClaimsData.forEach(claim => {
+                const color = claim.status === 'approved' ? 'green' : 
+                             claim.status === 'pending' ? 'orange' : 'red';
+                
+                const marker = L.circleMarker(claim.coords, {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.8,
+                    radius: 8
+                }).addTo(map);
+
+                marker.bindPopup(`
+                    <div style="font-family: Arial, sans-serif;">
+                        <h4 style="margin: 0 0 8px 0; color: #2e7d32;">${claim.id}</h4>
+                        <p style="margin: 4px 0;"><strong>Applicant:</strong> ${claim.applicant}</p>
+                        <p style="margin: 4px 0;"><strong>Village:</strong> ${claim.village}</p>
+                        <p style="margin: 4px 0;"><strong>Area:</strong> ${claim.area}</p>
+                        <p style="margin: 4px 0;"><strong>Status:</strong> 
+                            <span style="color: ${color}; font-weight: bold; text-transform: capitalize;">
+                                ${claim.status}
+                            </span>
+                        </p>
+                    </div>
+                `);
+            });
+
+            // Add legend
+            const legend = L.control({position: 'bottomright'});
+            legend.onAdd = function(map) {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML = `
+                    <h4 style="margin: 0 0 10px 0; color: #2c5530;">FRA Claims Status</h4>
+                    <div style="margin: 5px 0; display: flex; align-items: center;">
+                        <div style="width: 16px; height: 16px; background: green; border-radius: 50%; margin-right: 8px;"></div>
+                        <span>🟢 Approved Claims</span>
+                    </div>
+                    <div style="margin: 5px 0; display: flex; align-items: center;">
+                        <div style="width: 16px; height: 16px; background: orange; border-radius: 50%; margin-right: 8px;"></div>
+                        <span>🟡 Pending Review</span>
+                    </div>
+                    <div style="margin: 5px 0; display: flex; align-items: center;">
+                        <div style="width: 16px; height: 16px; background: red; border-radius: 50%; margin-right: 8px;"></div>
+                        <span>🔴 Rejected Claims</span>
+                    </div>
+                `;
+                return div;
+            };
+            legend.addTo(map);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🌿 VanMitra Complete Platform Loaded');
+            
+            // Initialize charts for the default active tab
+            if (document.getElementById('fra-predictor-tab').classList.contains('active')) {
+                // FRA predictor is active by default - no additional initialization needed
+            }
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

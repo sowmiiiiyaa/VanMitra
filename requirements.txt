@@ -1,0 +1,44 @@
+# Core Flask dependencies
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# AI/ML Libraries
+scikit-learn==1.3.0
+numpy==1.24.3
+pandas==1.5.3
+
+# NLP Libraries
+nltk==3.8.1
+textblob==0.17.1
+
+# Speech Processing (for production use)
+# openai-whisper==20230918
+# torch==2.0.1
+# torchaudio==2.0.2
+
+# Translation (for production use)  
+# transformers==4.33.2
+# torch==2.0.1
+# sentencepiece==0.1.99
+
+# Audio processing
+# librosa==0.10.1
+# soundfile==1.0.4
+
+# Web utilities
+requests==2.31.0
+
+# Additional utilities
+python-dateutil==2.8.2
+pytz==2023.3
+
+# For file handling
+secure-filename==0.1
+
+# Optional: For enhanced audio support
+# pydub==0.25.1
+# ffmpeg-python==0.2.0
+
+# Note: Some libraries are commented out to keep installation lightweight
+# Uncomment them when you're ready to implement real speech-to-text and translation
+# For now, the system uses dummy data for demonstration purposes
