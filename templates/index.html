@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VanMitra - FRA Management System</title>
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .section h3 {
+            color: #2c5530;
+            border-bottom: 2px solid #4a7c59;
+            padding-bottom: 10px;
+        }
+        
+        .flex-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .flex-item {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c5530;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            background: #4a7c59;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            background: #2c5530;
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #4a7c59;
+            background: #f8f9fa;
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .chart-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌿 VanMitra</h1>
+            <p>Forest Rights Act (FRA) Management & Decision Support System</p>
+            <p><em>Empowering tribal communities through technology</em></p>
+        </div>
+
+        <!-- AI Prediction Section -->
+        <div class="section">
+            <h3>🤖 AI-Powered FRA Approval Predictor</h3>
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="form-group">
+                        <label for="claims">Number of Claims:</label>
+                        <input type="number" id="claims" value="25" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="area">Forest Area (hectares):</label>
+                        <input type="number" id="area" value="150" min="0">
+                    </div>
+                    <button class="btn" onclick="predictApproval()">Predict Approval Probability</button>
+                </div>
+                <div class="flex-item">
+                    <div id="predictionResult" class="result" style="display: none;">
+                        <h4>Prediction Result:</h4>
+                        <p id="predictionText"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Analysis Section -->
+        <div class="section">
+            <h3>💬 Community Feedback Analysis</h3>
+            <div class="flex-container">
+                <div class="flex-item">
+                    <div class="form-group">
+                        <label for="feedback">Community Feedback:</label>
+                        <textarea id="feedback" rows="4" placeholder="Enter feedback from tribal communities about FRA processes...">The new digital process is much faster and easier to understand. We appreciate the transparency.</textarea>
+                    </div>
+                    <button class="btn" onclick="analyzeFeedback()">Analyze Sentiment</button>
+                </div>
+                <div class="flex-item">
+                    <div id="sentimentResult" class="result" style="display: none;">
+                        <h4>Sentiment Analysis:</h4>
+                        <p id="sentimentText"></p>
+                        <p id="polarityText"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="section">
+            <h3>📊 FRA Dashboard</h3>
+            <div class="charts-container">
+                <div class="chart-item">
+                    <h4>Claims Status Distribution</h4>
+                    <canvas id="claimsChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-item">
+                    <h4>Processing Time Trends</h4>
+                    <canvas id="timeChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="section">
+            <h3>🗺️ FRA Smart Atlas</h3>
+            <div id="map" style="height: 500px; border-radius: 8px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // AI Prediction Function
+        async function predictApproval() {
+            const claims = document.getElementById('claims').value;
+            const area = document.getElementById('area').value;
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        claims: parseInt(claims),
+                        area: parseInt(area)
+                    })
+                });
+                
+                const data = await response.json();
+                const probability = (data.probability_of_approval * 100).toFixed(1);
+                
+                document.getElementById('predictionResult').style.display = 'block';
+                document.getElementById('predictionText').innerHTML = `
+                    <strong>Approval Probability: ${probability}%</strong><br>
+                    <em>Based on ${claims} claims and ${area} hectares of forest area</em>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error predicting approval. Please try again.');
+            }
+        }
+
+        // Sentiment Analysis Function
+        async function analyzeFeedback() {
+            const feedback = document.getElementById('feedback').value;
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        feedback: feedback
+                    })
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('sentimentResult').style.display = 'block';
+                document.getElementById('sentimentText').innerHTML = `
+                    <strong>Sentiment: ${data.sentiment}</strong>
+                `;
+                document.getElementById('polarityText').innerHTML = `
+                    <em>Polarity Score: ${data.polarity.toFixed(3)} (Range: -1 to +1)</em>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error analyzing sentiment. Please try again.');
+            }
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Pie Chart: Claims Status
+            const ctx1 = document.getElementById('claimsChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: ['Approved', 'Pending', 'Rejected'],
+                    datasets: [{
+                        data: [35, 50, 15],
+                        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'FRA Claims Status (Last 6 Months)'
+                        }
+                    }
+                }
+            });
+
+            // Line Chart: Processing Time
+            const ctx2 = document.getElementById('timeChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Avg Processing Time (days)',
+                        data: [45, 38, 42, 35, 28, 32],
+                        borderColor: '#4a7c59',
+                        backgroundColor: 'rgba(74, 124, 89, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'FRA Processing Time Trends'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Days'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize Map
+        function initializeMap() {
+            // Focus on Bastar Tribal Region, Chhattisgarh (detailed view)
+            const map = L.map('map').setView([19.3149, 81.9620], 12);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Custom colored markers HTML
+            const createColoredMarker = (color, size = 20) => {
+                return L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="background-color: ${color}; width: ${size}px; height: ${size}px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>`,
+                    iconSize: [size, size],
+                    iconAnchor: [size/2, size/2]
+                });
+            };
+
+            // Main tribal settlement marker
+            const mainSettlement = L.marker([19.3149, 81.9620], {
+                icon: createColoredMarker('#2c5530', 30)
+            }).addTo(map);
+            
+            mainSettlement.bindPopup(`
+                <div style="min-width: 300px; font-family: Arial, sans-serif;">
+                    <h3 style="margin: 0 0 10px 0; color: #2c5530;">🏘️ Bastar Tribal Region</h3>
+                    <p style="margin: 5px 0; font-weight: bold;">Chhattisgarh State</p>
+                    <p style="margin: 5px 0;">Main Administrative Center for FRA Claims</p>
+                    <p style="margin: 5px 0; font-size: 0.9em; color: #666;">Click on colored markers to see individual claim status</p>
+                </div>
+            `);
+
+            // Individual FRA claims with different statuses
+            const claims = [
+                // GREEN - Approved Claims
+                {
+                    claimId: "FRA-2024-001",
+                    coords: [19.3200, 81.9580],
+                    applicant: "Ramesh Gond",
+                    village: "Kirandul Village",
+                    landArea: "2.5 acres",
+                    status: "approved",
+                    statusDate: "2024-08-15",
+                    description: "Individual forest rights claim - Approved after verification"
+                },
+                {
+                    claimId: "FRA-2024-005",
+                    coords: [19.3100, 81.9650],
+                    applicant: "Sunita Dhurwa",
+                    village: "Bacheli Village",
+                    landArea: "1.8 acres",
+                    status: "approved",
+                    statusDate: "2024-09-02",
+                    description: "Community forest rights - Title issued"
+                },
+                {
+                    claimId: "FRA-2024-012",
+                    coords: [19.3050, 81.9700],
+                    applicant: "Tribal Cooperative Society",
+                    village: "Dantewada Village",
+                    landArea: "15 acres",
+                    status: "approved",
+                    statusDate: "2024-07-20",
+                    description: "Community rights for traditional agriculture"
+                },
+                
+                // YELLOW - In Process Claims
+                {
+                    claimId: "FRA-2024-008",
+                    coords: [19.3180, 81.9720],
+                    applicant: "Mangal Singh Netam",
+                    village: "Geedam Village",
+                    landArea: "3.2 acres",
+                    status: "processing",
+                    statusDate: "2024-06-10",
+                    description: "Under verification - Survey team assigned"
+                },
+                {
+                    claimId: "FRA-2024-015",
+                    coords: [19.3250, 81.9530],
+                    applicant: "Kamala Mandavi",
+                    village: "Bijapur Village",
+                    landArea: "2.1 acres",
+                    status: "processing",
+                    statusDate: "2024-07-30",
+                    description: "Documentation review in progress"
+                },
+                {
+                    claimId: "FRA-2024-018",
+                    coords: [19.3080, 81.9590],
+                    applicant: "Bastar Women's Collective",
+                    village: "Jagdalpur Village",
+                    landArea: "8.5 acres",
+                    status: "processing",
+                    statusDate: "2024-08-20",
+                    description: "Pending final committee approval"
+                },
+                
+                // RED - Problem/Not Registered Claims
+                {
+                    claimId: "FRA-2024-003",
+                    coords: [19.3220, 81.9680],
+                    applicant: "Devi Lal Halba",
+                    village: "Kondagaon Village",
+                    landArea: "4.1 acres",
+                    status: "rejected",
+                    statusDate: "2024-09-10",
+                    description: "Insufficient documentation - Land not under traditional use"
+                },
+                {
+                    claimId: "FRA-2024-007",
+                    coords: [19.3160, 81.9610],
+                    applicant: "Rajesh Korram",
+                    village: "Narayanpur Village",
+                    landArea: "2.8 acres",
+                    status: "problem",
+                    statusDate: "2024-05-15",
+                    description: "Land dispute with neighboring village"
+                },
+                {
+                    claimId: "FRA-2024-020",
+                    coords: [19.3120, 81.9750],
+                    applicant: "Savita Madkam",
+                    village: "Sukma Village",
+                    landArea: "1.5 acres",
+                    status: "not_registered",
+                    statusDate: "2024-09-25",
+                    description: "Application incomplete - Missing community verification"
+                }
+            ];
+
+            // Add claim markers
+            claims.forEach(claim => {
+                let markerColor, statusText, statusIcon;
+                
+                switch(claim.status) {
+                    case 'approved':
+                        markerColor = '#28a745'; // Green
+                        statusText = 'APPROVED';
+                        statusIcon = '✅';
+                        break;
+                    case 'processing':
+                        markerColor = '#ffc107'; // Yellow
+                        statusText = 'IN PROCESS';
+                        statusIcon = '⏳';
+                        break;
+                    case 'rejected':
+                        markerColor = '#dc3545'; // Red
+                        statusText = 'REJECTED';
+                        statusIcon = '❌';
+                        break;
+                    case 'problem':
+                        markerColor = '#fd7e14'; // Orange-Red
+                        statusText = 'PROBLEM';
+                        statusIcon = '⚠️';
+                        break;
+                    case 'not_registered':
+                        markerColor = '#6c757d'; // Dark Red
+                        statusText = 'NOT REGISTERED';
+                        statusIcon = '�';
+                        break;
+                }
+
+                const marker = L.marker(claim.coords, {
+                    icon: createColoredMarker(markerColor, 16)
+                }).addTo(map);
+                
+                const popupContent = `
+                    <div style="min-width: 280px; font-family: Arial, sans-serif;">
+                        <h4 style="margin: 0 0 10px 0; color: #2c5530;">${statusIcon} Claim ID: ${claim.claimId}</h4>
+                        
+                        <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                            <p style="margin: 3px 0;"><strong>� Applicant:</strong> ${claim.applicant}</p>
+                            <p style="margin: 3px 0;"><strong>🏘️ Village:</strong> ${claim.village}</p>
+                            <p style="margin: 3px 0;"><strong>🌾 Land Area:</strong> ${claim.landArea}</p>
+                            <p style="margin: 3px 0;"><strong>📅 Status Date:</strong> ${claim.statusDate}</p>
+                        </div>
+                        
+                        <div style="background: ${markerColor}20; padding: 10px; border-radius: 5px; border-left: 4px solid ${markerColor};">
+                            <p style="margin: 0 0 5px 0; font-weight: bold; color: ${markerColor};">Status: ${statusText}</p>
+                            <p style="margin: 0; font-size: 0.9em; color: #666;">${claim.description}</p>
+                        </div>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+            });
+
+            // Add a color-coded legend
+            const legend = L.control({position: 'bottomright'});
+            legend.onAdd = function(map) {
+                const div = L.DomUtil.create('div', 'legend');
+                div.style.background = 'white';
+                div.style.padding = '15px';
+                div.style.border = '2px solid #ddd';
+                div.style.borderRadius = '8px';
+                div.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                div.innerHTML = `
+                    <h4 style="margin: 0 0 10px 0; color: #2c5530;">FRA Claims Status</h4>
+                    <div style="margin: 5px 0; display: flex; align-items: center;">
+                        <div style="width: 16px; height: 16px; background: #28a745; border-radius: 50%; margin-right: 8px;"></div>
+                        <span>🟢 High Acceptance (≥75%)</span>
+                    </div>
+                    <div style="margin: 5px 0; display: flex; align-items: center;">
+                        <div style="width: 16px; height: 16px; background: #ffc107; border-radius: 50%; margin-right: 8px;"></div>
+                        <span>🟡 Moderate Acceptance (50-74%)</span>
+                    </div>
+                    <div style="margin: 5px 0; display: flex; align-items: center;">
+                        <div style="width: 16px; height: 16px; background: #dc3545; border-radius: 50%; margin-right: 8px;"></div>
+                        <span>� Low Acceptance (<50%)</span>
+                    </div>
+                `;
+                return div;
+            };
+            legend.addTo(map);
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            initializeMap();
+        });
+    </script>
+</body>
+</html>
